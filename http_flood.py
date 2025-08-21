@@ -6291,22 +6291,6 @@ def generate_random_path(self):
             ])
         return random.choice(self.paths)
     
-    def generate_random_params(self):
-        # Generate random parameter untuk query string
-        if not self.params:
-            # Default params jika tidak ada yang diset
-            params = {
-                "id": random.randint(1, 1000),
-                "page": random.randint(1, 10),
-                "sort": random.choice(["asc", "desc"]),
-                "filter": random.choice(["new", "popular", "featured"])
-            }
-        else:
-            params = {}
-            for param in self.params:
-                params[param] = random.randint(1, 1000)
-        return params
-    
     def generate_payload(self):
         # Generate payload jika diperlukan
         if self.payload_size > 0:
