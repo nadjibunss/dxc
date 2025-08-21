@@ -6280,6 +6280,7 @@ class HTTPFloodDDoS:
             "Foyles/5.0.0",
             "Waterstones/5.0.0",
             "Blackwell's/5.0.",
+        ]
 def main():
     parser = argparse.ArgumentParser(description='HTTP Flood DDoS Tool')
     parser.add_argument('--target', required=True, help='Target URL/IP')
